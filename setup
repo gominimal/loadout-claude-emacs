@@ -1,0 +1,35 @@
+#!/bin/sh
+# One-time setup after cloning this loadout into <config>/minimal/loadouts/<name>.
+# Writes local/gitconfig (your git identity, ignored by git) and makes the
+# loadout the default for `min session activate`. Safe to re-run.
+set -eu
+
+here=$(cd "$(dirname "$0")" && pwd)
+name=$(basename "$here")
+config=${XDG_CONFIG_HOME:-$HOME/.config}/minimal
+
+case $here in
+  "$config"/loadouts/*) ;;
+  *) echo "warning: $here is not under $config/loadouts, so min will not find it" >&2 ;;
+esac
+
+if [ ! -f "$here/local/gitconfig" ]; then
+  mkdir -p "$here/local"
+  user=$(git config user.name 2>/dev/null || true)
+  email=$(git config user.email 2>/dev/null || true)
+  printf '[user]\n\tname = %s\n\temail = %s\n' "${user:-Your Name}" "${email:-you@example.com}" \
+    > "$here/local/gitconfig"
+  echo "wrote local/gitconfig${user:+ from the host git identity}; edit it if that is not what sessions should commit as"
+fi
+
+toml=$config/config.toml
+if [ ! -f "$toml" ]; then
+  mkdir -p "$config"
+  printf '[loadouts]\ndefault_loadouts = ["%s"]\n' "$name" > "$toml"
+  echo "wrote $toml"
+elif ! grep -q "\"$name\"" "$toml"; then
+  echo "note: \"$name\" is not in [loadouts].default_loadouts of $toml;"
+  echo "      add it there, or pass --loadout $name to min session activate"
+fi
+
+min loadout list

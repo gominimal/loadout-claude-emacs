@@ -1,0 +1,4 @@
+# Emacs backup, autosave (leading # must be escaped or the line is a comment) and lock files
+*~
+\#*#
+.#*

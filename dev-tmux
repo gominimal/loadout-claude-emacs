@@ -1,0 +1,48 @@
+#!/bin/sh
+# Build (once) and attach the "dev" tmux session for Minimal sessions:
+#
+#   ┌────────────┬────────────┐
+#   │            │   emacs    │
+#   │   claude   ├────────────┤
+#   │            │ bash+help  │
+#   └────────────┴────────────┘
+#
+# Launched from ~/.bashrc, which the daemon's attach rc sources at startup
+# (minimal PR #1400); nothing in the loadout's [vars] is involved.
+# Detaching (C-] d) ends the attach;
+# the next `min session attach` re-enters this session.
+# Each pane is a plain interactive shell and the program is typed into it
+# with send-keys: that keeps a shell underneath claude/emacs, so Ctrl-Z /
+# fg job control works, quitting the program lands at a prompt in the same
+# pane (layout intact), and the command is in history for quick restart.
+set -eu
+
+# The attach shell's PROMPT_COMMAND/MINIMAL_MOTD (the daemon's orientation
+# banner) are still exported while this script runs: ~/.bashrc runs us before
+# the first prompt, so PROMPT_COMMAND has not fired and unset them yet. Drop
+# them so the tmux server -- and every pane shell it spawns -- doesn't inherit
+# the pair and print the banner at each pane's first prompt.
+unset PROMPT_COMMAND MINIMAL_MOTD
+
+if ! tmux has-session -t dev 2>/dev/null; then
+  tmux new-session -d -s dev -n main
+  tmux split-window -h -t dev:main
+  tmux split-window -v -t dev:main.1
+  tmux send-keys -t dev:main.0 'claude' C-m
+  tmux send-keys -t dev:main.1 'emacs' C-m
+  tmux send-keys -t dev:main.2 'cat "$HOME/.local/share/dev-tmux/help.txt"' C-m
+  tmux select-pane -t dev:main.0
+fi
+# Also scrub a server that predates the unset above (new windows/panes in
+# it would otherwise still inherit the vars from its startup environment).
+tmux set-environment -gu PROMPT_COMMAND 2>/dev/null || true
+tmux set-environment -gu MINIMAL_MOTD 2>/dev/null || true
+# No exec: when the tmux client detaches (C-o d) we fall back to the
+# attach shell instead of exiting it. If the attach shell's process
+# exited here, minimald would tear down the session's processes -- tmux
+# server included -- and the next attach would get a fresh layout.
+tmux attach -t dev || true
+
+printf '\n[dev-tmux] tmux detached\n'
+printf '  dev-tmux  re-enter the tmux session\n'
+printf '  exit      end the session processes\n'

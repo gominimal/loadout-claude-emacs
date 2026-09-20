@@ -1,0 +1,18 @@
+# Shared git config for this loadout, patched to ~/.config/git/config in the
+# session. Identity is not here: ~/.gitconfig comes from local/gitconfig.
+
+# What `gh auth setup-git` writes: credentials come from gh. The empty helper
+# line clears any inherited helpers first.
+[credential "https://github.com"]
+	helper =
+	helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !gh auth git-credential
+
+[color "diff"]
+	context = normal
+	# deletions: red, underlined
+	old = red ul
+	# additions: black on cyan, so they punch through
+	new = black cyan bold

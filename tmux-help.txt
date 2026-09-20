@@ -1,0 +1,15 @@
+── tmux quick keys · prefix is Ctrl-o ──────────────────────
+  switch pane    C-o o  (cycle) · C-o ←/↑/↓/→ · C-o q <num>
+  swap pane      C-o { / C-o }  (with prev / next pane)
+  zoom pane      C-o z  (toggle current pane fullscreen)
+  scroll/copy    C-o [  (emacs keys: M-w copy, q quit)
+  paste          C-o C-y
+
+  leave / return (everything keeps running either way)
+  C-] d          detach the minimal session directly; the next
+                 `min session attach` resumes this exact screen
+  C-o d          drop to the session shell under tmux;
+                 `dev-tmux` re-enters, C-] d leaves from there
+  (typing `exit` in that shell ends the session's processes;
+   files are kept and the session stays recoverable)
+────────────────────────────────────────────────────────────

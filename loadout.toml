@@ -1,0 +1,47 @@
+description = "emacs (eglot + 12-language LSP roster), tmux, claude-code, terminal tools"
+
+packages = [
+    # ── Editor ───────────────────────────────────────────────────────
+    "emacs",
+    "emacs-site-lisp",      # library-only elisp + tree-sitter grammars
+    "dev-language-servers", # LSP roster meta-pkg (12 languages)
+
+    # ── Terminal tools ───────────────────────────────────────────────
+    "tmux",
+    "less",
+    "kittyview",
+    "mermaid-cli",
+    "claude-code",
+    "claude-code-minimal-plugin",
+    "wget",
+    "gh",                   # also git's credential helper
+
+    # ── Support ──────────────────────────────────────────────────────
+    "base",
+    "git",                  # magit
+    "ripgrep",              # consult-ripgrep
+    "fd",                   # consult-fd
+]
+
+# Sources live in this directory ($LOADOUT_ROOT); dests are relative to the
+# session home. Permission bits carry across, so dev-tmux lands executable.
+# A missing source is skipped with a warning, so the loadout works before
+# ./setup has written local/gitconfig.
+patches = [
+    { dest = ".config/emacs/init.el",          source = "$LOADOUT_ROOT/init.el",         description = "emacs init; the MPR emacs wrapper uses ~/.config/emacs as --init-directory" },
+    { dest = ".tmux.conf",                     source = "$LOADOUT_ROOT/tmux.conf",       description = "tmux config" },
+    { dest = ".bashrc",                        source = "$LOADOUT_ROOT/bashrc",          description = "sourced by the attach shell; enters dev-tmux" },
+    { dest = ".local/bin/dev-tmux",            source = "$LOADOUT_ROOT/dev-tmux",        description = "3-pane tmux launcher (claude | emacs / help shell)" },
+    { dest = ".local/share/dev-tmux/help.txt", source = "$LOADOUT_ROOT/tmux-help.txt",   description = "tmux key cheatsheet shown in the help pane" },
+    { dest = ".config/git/config",             source = "$LOADOUT_ROOT/git/config",      description = "git: gh credential helper, diff colours" },
+    { dest = ".config/git/ignore",             source = "$LOADOUT_ROOT/git/ignore",      description = "git: global ignores (emacs backup files)" },
+    { dest = ".gitconfig",                     source = "$LOADOUT_ROOT/local/gitconfig", description = "git identity; untracked, written by ./setup" },
+]
+
+[vars]
+EDITOR    = "emacs"
+VISUAL    = "emacs"
+PAGER     = "less"
+LESS      = "-RFi"
+LANG      = "en_US.UTF-8"
+COLORTERM = { inherit = true, default = "truecolor" }
