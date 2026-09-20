@@ -4,13 +4,7 @@ A [Minimal](https://minimal.dev) loadout: Emacs 30 with eglot and a 12-language
 LSP roster, tree-sitter, vertico/consult/corfu and magit, plus claude-code, in a
 three-pane tmux layout that opens on every attach.
 
-```
-┌────────────┬────────────┐
-│            │   emacs    │
-│   claude   ├────────────┤
-│            │ bash+help  │
-└────────────┴────────────┘
-```
+![A fresh session: Claude Code in the left pane, Emacs top right, and a shell showing the tmux key cheatsheet bottom right](screenshot.png)
 
 ## Install
 
