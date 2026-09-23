@@ -16,6 +16,7 @@
       initial-scratch-message nil
       ring-bell-function 'ignore
       use-short-answers t
+      auto-revert-interval 1
       create-lockfiles nil
       require-final-newline t
       sentence-end-double-space nil
